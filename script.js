@@ -1,0 +1,334 @@
+let size = 9, bW = 3, bH = 3;
+let mode = 'create', selected = null, pencil = false, paused = false, isWon = false, darkMode = false;
+let board = [], timerVal = 0, timerInt = null;
+let undoStack = [], redoStack = [];
+
+const colors = ['#fff9c4', '#ffecb3', '#ffe0b2', '#ffcdd2', '#f8bbd0', '#e1bee7', '#d1c4e9', '#bbdefb', '#b3e5fc', '#b2ebf2', '#b2dfdb', '#c8e6c9', '#fff176', '#ffd54f', '#ffb74d', '#ef9a9a', '#f48fb1', '#ce93d8'];
+
+function toggleDarkMode() {
+    darkMode = !darkMode;
+    document.body.classList.toggle('dark-mode', darkMode);
+    renderGrid();
+    updateUI();
+}
+
+function setGridSize(s) {
+    size = s; bW = 3; bH = (s === 6) ? 2 : 3;
+    document.getElementById('size6').className = (s === 6) ? 'active' : '';
+    document.getElementById('size9').className = (s === 9) ? 'active' : '';
+    initBoard();
+}
+
+function initBoard() {
+    board = Array.from({ length: size * size }, () => ({ val: 0, given: false, notes: [], color: null }));
+    undoStack = []; redoStack = [];
+    selected = null; isWon = false; paused = false;
+    stopTimer();
+    document.getElementById('win-overlay').style.display = 'none';
+    document.getElementById('pause-overlay').style.display = 'none';
+    renderGrid();
+    renderNumpad();
+    updateUI();
+}
+
+function initHighlighter() {
+    const container = document.getElementById('highlighter-tools');
+    if (!container) return;
+    container.innerHTML = '';
+    colors.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'color-btn'; btn.style.backgroundColor = c;
+        btn.onclick = () => applyColor(c); container.appendChild(btn);
+    });
+}
+
+function applyColor(c) {
+    if (selected === null || isWon || paused) return;
+    saveState(); board[selected].color = c; updateUI();
+}
+
+function clearAllHighlights() {
+    if (isWon || paused) return;
+    if (!board.some(c => c.color !== null)) return;
+    if (!confirm("Clear all highlights?")) return;
+    saveState(); board.forEach(c => c.color = null); updateUI();
+}
+
+function saveState(isUndoAction = false) {
+    if (!isUndoAction) redoStack = [];
+    undoStack.push(JSON.stringify(board));
+    if (undoStack.length > 50) undoStack.shift();
+}
+
+function undo() {
+    if (undoStack.length === 0 || paused || isWon) return;
+    redoStack.push(JSON.stringify(board));
+    board = JSON.parse(undoStack.pop()); updateUI();
+}
+
+function redo() {
+    if (redoStack.length === 0 || paused || isWon) return;
+    undoStack.push(JSON.stringify(board));
+    board = JSON.parse(redoStack.pop()); updateUI();
+}
+
+function updateUI() {
+    const selVal = selected !== null ? board[selected].val : 0;
+    const selR = selected !== null ? Math.floor(selected / size) : -1;
+    const selC = selected !== null ? selected % size : -1;
+    const selBlockR = selR !== -1 ? Math.floor(selR / bH) : -1;
+    const selBlockC = selC !== -1 ? Math.floor(selC / bW) : -1;
+    const showSeen = document.getElementById('toggle-seen')?.checked ?? true;
+
+    board.forEach((data, i) => {
+        const el = document.getElementById(`cell-${i}`);
+        if (!el) return;
+
+        el.innerHTML = '';
+        el.className = el.className.split(' ').filter(c => !['selected', 'highlight', 'match', 'given', 'user', 'error'].includes(c)).join(' ');
+
+        const r = Math.floor(i / size), c = i % size;
+        const blockR = Math.floor(r / bH), blockC = Math.floor(c / bW);
+
+        let tint = "rgba(255, 255, 255, 0)"; 
+        
+        if (i === selected) {
+            el.classList.add('selected');
+            tint = darkMode ? "rgba(56, 189, 248, 0.5)" : "rgba(52, 152, 219, 0.4)"; 
+        } else if (showSeen && (r === selR || c === selC || (blockR === selBlockR && blockC === selBlockC))) {
+            el.classList.add('highlight');
+            tint = darkMode ? "rgba(56, 189, 248, 0.15)" : "rgba(52, 152, 219, 0.1)"; 
+        } else if (selVal !== 0 && data.val === selVal) {
+            el.classList.add('match');
+            tint = darkMode ? "rgba(74, 222, 128, 0.4)" : "rgba(46, 204, 113, 0.3)"; 
+        }
+
+        let highlightBase = data.color || (darkMode ? "#1e293b" : "white");
+        el.style.background = `linear-gradient(${tint}, ${tint}), ${highlightBase}`;
+
+        if (data.val !== 0) {
+            el.textContent = data.val;
+            el.classList.add(data.given ? 'given' : 'user');
+            if (hasConflict(board, i, data.val)) el.classList.add('error');
+        } else if (data.notes.length > 0) {
+            const pGrid = document.createElement('div');
+            pGrid.className = 'pencil-grid';
+            for(let n=1; n<=9; n++) {
+                const nDiv = document.createElement('div'); nDiv.className = 'pencil-num';
+                if (data.notes.includes(n)) {
+                    nDiv.textContent = n;
+                    if (hasConflict(board, i, n)) nDiv.classList.add('error');
+                }
+                pGrid.appendChild(nDiv);
+            }
+            el.appendChild(pGrid);
+        }
+    });
+    if (mode === 'create') validateStatus();
+    renderNumpad();
+}
+
+function renderGrid() {
+    const container = document.getElementById('grid');
+    container.innerHTML = '';
+    container.style.gridTemplateColumns = `repeat(${size}, var(--cell-size))`;
+    const gridLine = darkMode ? "#475569" : "#1e293b";
+    document.getElementById('grid-wrapper').style.background = gridLine;
+    container.style.background = gridLine;
+
+    board.forEach((cell, i) => {
+        const div = document.createElement('div');
+        div.className = 'cell'; div.id = `cell-${i}`;
+        const r = Math.floor(i / size), c = i % size;
+        if ((c + 1) % bW === 0 && c < size - 1) div.style.borderRight = `3px solid ${gridLine}`;
+        if ((r + 1) % bH === 0 && r < size - 1) div.style.borderBottom = `3px solid ${gridLine}`;
+        div.onclick = () => { if(!paused && !isWon) { selected = i; updateUI(); } };
+        container.appendChild(div);
+    });
+}
+
+function renderNumpad() {
+    const pad = document.getElementById('numpad'); pad.innerHTML = '';
+    const row1 = document.createElement('div'); row1.className = 'numpad-row';
+    for (let i = 1; i <= size; i++) {
+        const b = document.createElement('button'); b.className = 'n-btn'; b.textContent = i;
+        if (getCount(i) >= size) b.disabled = true;
+        b.onclick = () => handleInput(i); row1.appendChild(b);
+    }
+    pad.appendChild(row1);
+
+    const row2 = document.createElement('div'); row2.className = 'numpad-row';
+    const btns = [
+        { text: 'Undo\n(Z)', action: undo, disabled: undoStack.length === 0 },
+        { text: 'Redo\n(Shift Z)', action: redo, disabled: redoStack.length === 0 },
+        { text: pencil ? 'Pencil ON\n(N)' : 'Pencil OFF\n(N)', action: () => { pencil = !pencil; renderNumpad(); }, solveOnly: true, isPencil: true },
+        { text: 'Erase\n(0)', action: () => handleInput(0), danger: true }
+    ];
+
+    btns.forEach(cfg => {
+        if (cfg.solveOnly && mode !== 'solve') return;
+        const b = document.createElement('button');
+        b.className = 'n-btn'; b.style.width = '85px'; b.style.fontSize = '10px';
+        b.innerText = cfg.text;
+        if (cfg.disabled || isWon) b.disabled = true;
+        if (cfg.danger) b.style.color = 'var(--danger)';
+        if (cfg.isPencil && pencil) b.classList.add('pencil-active');
+        b.onclick = cfg.action;
+        row2.appendChild(b);
+    });
+    pad.appendChild(row2);
+}
+
+function handleInput(num) {
+    if (selected === null || paused || isWon) return;
+    const cell = board[selected];
+    if (mode === 'solve' && cell.given) return;
+    saveState();
+    if (pencil && mode === 'solve' && num !== 0) {
+        if (cell.val !== 0) return;
+        const pos = cell.notes.indexOf(num);
+        if (pos > -1) cell.notes.splice(pos, 1); else cell.notes.push(num);
+    } else {
+        cell.val = num; cell.notes = [];
+        cell.given = (mode === 'create' && num !== 0);
+    }
+    updateUI();
+    if (mode === 'solve') checkWin();
+}
+
+function handleClearBoard() {
+    if (!confirm("Reset entire board?")) return;
+    saveState();
+    if (mode === 'create') initBoard();
+    else { board.forEach(c => { if(!c.given) { c.val = 0; c.notes = []; c.color = null; } }); updateUI(); }
+}
+
+function clearUserInputs() {
+    if (!confirm("Clear user inputs?")) return;
+    saveState(); board.forEach(c => { if(!c.given) c.val = 0; }); updateUI();
+}
+
+function cleanAllPencils() {
+    saveState(); board.forEach(c => c.notes = []); updateUI();
+}
+
+function getCount(num) { return board.filter((c, i) => c.val === num && !hasConflict(board, i, num)).length; }
+
+function hasConflict(arr, idx, val) {
+    if (val === 0) return false;
+    const r = Math.floor(idx / size), c = idx % size, br = Math.floor(r / bH) * bH, bc = Math.floor(c / bW) * bW;
+    for (let i = 0; i < size * size; i++) {
+        if (i === idx || arr[i].val !== val) continue;
+        const tr = Math.floor(i / size), tc = i % size;
+        if (tr === r || tc === c || (tr >= br && tr < br+bH && tc >= bc && tc < bc+bW)) return true;
+    }
+    return false;
+}
+
+function setAppMode(m) {
+    if (mode === 'solve' && m === 'create') {
+        if (!confirm("Switching to Create Mode will reset the current puzzle and wipe your progress. Do you want to continue?")) {
+            return;
+        }
+    }
+    mode = m; 
+    document.getElementById('modeCreate').classList.toggle('active', m === 'create');
+    document.getElementById('modeSolve').classList.toggle('active', m === 'solve');
+    document.getElementById('gen-controls').style.display = (m === 'create') ? 'flex' : 'none';
+    document.getElementById('size-selector').style.display = (m === 'create') ? 'flex' : 'none';
+    document.getElementById('timer').style.display = (m === 'solve') ? 'block' : 'none';
+    document.getElementById('pause-btn').style.display = (m === 'solve') ? 'block' : 'none';
+    document.getElementById('clean-pencils-link').style.display = (m === 'solve') ? 'inline' : 'none';
+    
+    if (m === 'solve') {
+        startTimer();
+    } else {
+        stopTimer();
+        initBoard();
+    }
+    updateUI();
+}
+
+function startTimer() { clearInterval(timerInt); timerInt = setInterval(() => {
+    timerVal++;
+    const m = Math.floor(timerVal/60).toString().padStart(2, '0');
+    const s = (timerVal%60).toString().padStart(2, '0');
+    document.getElementById('timer').textContent = `${m}:${s}`;
+}, 1000); }
+
+function stopTimer() { clearInterval(timerInt); timerVal = 0; document.getElementById('timer').textContent = "00:00"; }
+
+function togglePause() { paused = !paused; document.getElementById('pause-overlay').style.display = paused ? 'flex' : 'none'; if (!paused) startTimer(); else clearInterval(timerInt); }
+
+function validateStatus() {
+    const label = document.getElementById('status-label');
+    if (board.every(c => c.val === 0)) { label.textContent = "Enter Digits..."; label.style.color = "var(--text-main)"; return; }
+    const err = board.some((_, i) => hasConflict(board, i, board[i].val));
+    label.textContent = err ? "Invalid Rules" : "Unique Puzzle";
+    label.style.color = err ? "var(--danger)" : "var(--success)";
+}
+
+function generateNew() {
+    initBoard();
+    let flat = Array(size * size).fill(0);
+    const fill = (idx) => {
+        if (idx === size * size) return true;
+        let nums = Array.from({length: size}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+        for (let n of nums) { if (!hasConflictGen(flat, idx, n)) { flat[idx] = n; if (fill(idx + 1)) return true; flat[idx] = 0; } }
+        return false;
+    };
+    fill(0);
+    const diff = document.getElementById('diff').value;
+    const limit = diff === 'easy' ? 35 : (diff === 'medium' ? 45 : 55);
+    for(let i=0; i<limit; i++) { flat[Math.floor(Math.random()*size*size)] = 0; }
+    flat.forEach((v, i) => { board[i].val = v; board[i].given = (v !== 0); });
+    updateUI();
+}
+
+function hasConflictGen(f, id, v) {
+    const r = Math.floor(id/size), c = id%size, br = Math.floor(r/bH)*bH, bc = Math.floor(c/bW)*bW;
+    for(let i=0; i<size*size; i++) { if(f[i] === v) { const tr = Math.floor(i/size), tc = i%size; if(tr === r || tc === c || (tr >= br && tr < br+bH && tc >= bc && tc < bc+bW)) return true; } }
+    return false;
+}
+
+function checkWin() {
+    if (board.every(c => c.val !== 0) && !board.some((_, i) => hasConflict(board, i, board[i].val))) {
+        isWon = true; clearInterval(timerInt);
+        document.getElementById('final-time').textContent = `Final Time: ${document.getElementById('timer').textContent}`;
+        document.getElementById('win-overlay').style.display = 'flex';
+    }
+}
+
+function restartSameLevel() {
+    board.forEach(c => { if (!c.given) { c.val = 0; c.notes = []; c.color = null; } });
+    document.getElementById('win-overlay').style.display = 'none';
+    isWon = false; paused = false; startTimer(); updateUI();
+}
+
+function exitToCreate() { initBoard(); setAppMode('create'); }
+
+window.addEventListener('keydown', (e) => {
+    if (paused || isWon) return;
+    const key = e.key.toLowerCase();
+    if (['w','a','s','d'].includes(key) || key.includes('arrow')) {
+        e.preventDefault();
+        if (selected === null) selected = 0;
+        else {
+            let r = Math.floor(selected / size), c = selected % size;
+            if ((key === 'w' || key === 'arrowup') && r > 0) r--;
+            if ((key === 's' || key === 'arrowdown') && r < size - 1) r++;
+            if ((key === 'a' || key === 'arrowleft') && c > 0) c--;
+            if ((key === 'd' || key === 'arrowright') && c < size - 1) c++;
+            selected = r * size + c;
+        }
+        updateUI();
+    }
+    if (e.key >= '1' && e.key <= size.toString()) handleInput(parseInt(e.key));
+    if (e.key === 'Backspace' || e.key === 'Delete' || e.key === '0') handleInput(0);
+    if (key === 'z') { if (e.shiftKey) redo(); else undo(); }
+    if (key === 'n' && mode === 'solve') { pencil = !pencil; renderNumpad(); }
+});
+
+// Start the app
+initHighlighter();
+setGridSize(9);
