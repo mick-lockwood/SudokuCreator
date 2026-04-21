@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku Creator V1.1.2</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Sudoku Creator <span id="difficulty-badge" style="font-size: 0.45em; background: #e2e8f0; color: #64748b; padding: 4px 12px; border-radius: 50px; text-transform: uppercase; display: none;">Medium</span></h1>
+
+    <div id="app-container">
+        <div id="left-panel">
+            <div class="tool-section">
+                <h3>Visibility</h3>
+                <label class="switch-label">Highlight Cells Seen <input type="checkbox" id="toggle-seen" checked onchange="updateUI()"></label>
+            </div>
+            <div class="tool-section">
+                <h3>Theme</h3>
+                <button class="clear-color-btn" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+            </div>
+        </div>
+
+        <div class="game-column">
+            <div class="main-card">
+                <div class="row">
+                    <div class="toggle-group" id="size-selector">
+                        <button id="size6" onclick="setGridSize(6)">6x6</button>
+                        <button id="size9" class="active" onclick="setGridSize(9)">9x9</button>
+                    </div>
+                    <div class="toggle-group">
+                        <button id="modeCreate" class="active" onclick="setAppMode('create')">CREATE</button>
+                        <button id="modeSolve" onclick="setAppMode('solve')">SOLVE</button>
+                    </div>
+                    <div id="timer" style="display:none; font-size: 22px; font-weight: 800;">00:00</div>
+                    <button id="pause-btn" class="btn" style="display:none; background: #64748b; color: white; padding: 10px 15px;" onclick="togglePause()">Pause</button>
+                </div>
+
+                <div class="row" id="gen-controls">
+                    <select id="diff" style="padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="generateNew()">Generate Unique Puzzle</button>
+                </div>
+
+                <div id="status-label" style="font-size: 13px; font-weight: 800; text-transform: uppercase;">Enter Digits...</div>
+                
+                <div style="display: flex; gap: 20px; font-size: 12px;">
+                    <a href="#" style="color: var(--danger); text-decoration: none; font-weight: 600;" onclick="handleClearBoard()">Reset Puzzle</a>
+                    <a href="#" style="color: #64748b; text-decoration: none; font-weight: 600;" onclick="clearUserInputs()">Clear User Inputs</a>
+                    <a href="#" id="clean-pencils-link" style="display:none; color: #64748b; text-decoration: none; font-weight: 600;" onclick="cleanAllPencils()">Clear Pencils Only</a>
+                </div>
+            </div>
+
+            <div id="grid-wrapper">
+                <div id="grid" class="grid"></div>
+                <div id="pause-overlay" class="overlay">
+                    <h2>Game Paused</h2>
+                    <button class="btn btn-primary" style="margin-top:15px;" onclick="togglePause()">Resume</button>
+                </div>
+                <div id="win-overlay" class="overlay">
+                    <h2 style="color: var(--success); font-size: 34px;">SOLVED!</h2>
+                    <p id="final-time" style="font-weight: 800; margin: 10px 0;"></p>
+                    <button class="btn btn-primary" onclick="restartSameLevel()">Play Again</button>
+                    <button class="btn" style="margin-top: 10px; background: #64748b; color: white;" onclick="exitToCreate()">Back to Create</button>
+                </div>
+            </div>
+
+            <div class="numpad" id="numpad" style="margin-top: 30px; width: 100%;"></div>
+        </div> 
+
+        <div class="side-panel">
+            <h3>Highlighter</h3>
+            <div class="color-grid" id="highlighter-tools"></div>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <button class="clear-color-btn" onclick="applyColor(null)">Clear Selected</button>
+                <button class="clear-color-btn" style="background: #fee2e2; color: #991b1b;" onclick="clearAllHighlights()">Clear ALL</button>
+            </div>
+        </div>
+    </div> 
+    <canvas id="confetti"></canvas>
+
+    <script src="script.js"></script>
+</body>
+</html>
