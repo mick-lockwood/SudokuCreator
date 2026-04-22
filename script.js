@@ -183,17 +183,38 @@ function handleInput(num) {
     if (selected === null || paused || isWon) return;
     const cell = board[selected];
     if (mode === 'solve' && cell.given) return;
+    
     saveState();
     if (pencil && mode === 'solve' && num !== 0) {
         if (cell.val !== 0) return;
         const pos = cell.notes.indexOf(num);
         if (pos > -1) cell.notes.splice(pos, 1); else cell.notes.push(num);
     } else {
-        cell.val = num; cell.notes = [];
+        cell.val = num; 
+        cell.notes = [];
         cell.given = (mode === 'create' && num !== 0);
+        
+        // FIX: Automatic Pencil Cleaning
+        if (mode === 'solve' && num !== 0) {
+            cleanPencilsAfterMove(selected, num);
+        }
     }
     updateUI();
     if (mode === 'solve') checkWin();
+}
+
+// Logic for auto-deleting pencils in the same row, col, and box
+function cleanPencilsAfterMove(idx, val) {
+    const r = Math.floor(idx / size), c = idx % size;
+    const br = Math.floor(r / bH) * bH, bc = Math.floor(c / bW) * bW;
+
+    board.forEach((cell, i) => {
+        const tr = Math.floor(i / size), tc = i % size;
+        if (tr === r || tc === c || (tr >= br && tr < br + bH && tc >= bc && tc < bc + bW)) {
+            const noteIdx = cell.notes.indexOf(val);
+            if (noteIdx > -1) cell.notes.splice(noteIdx, 1);
+        }
+    });
 }
 
 function handleClearBoard() {
@@ -249,12 +270,37 @@ function setAppMode(m) {
     updateUI();
 }
 
-function startTimer() { clearInterval(timerInt); timerInt = setInterval(() => {
-    timerVal++;
-    const m = Math.floor(timerVal/60).toString().padStart(2, '0');
-    const s = (timerVal%60).toString().padStart(2, '0');
-    document.getElementById('timer').textContent = `${m}:${s}`;
-}, 1000); }
+// FIX: Timer "Cheating" Bug
+function startTimer() { 
+    // Ensure we don't start multiple intervals if Solve button is clicked repeatedly
+    if (timerInt) clearInterval(timerInt); 
+    
+    timerInt = setInterval(() => {
+        timerVal++;
+        const m = Math.floor(timerVal/60).toString().padStart(2, '0');
+        const s = (timerVal%60).toString().padStart(2, '0');
+        document.getElementById('timer').textContent = `${m}:${s}`;
+    }, 1000); 
+}
+
+// FIX: Unique Puzzle Indicator Logic
+function countSolutions(arr, limit = 2) {
+    let solutions = 0;
+    const solve = (idx) => {
+        if (idx === size * size) { solutions++; return; }
+        if (arr[idx] !== 0) { solve(idx + 1); return; }
+        for (let n = 1; n <= size; n++) {
+            if (solutions >= limit) return;
+            if (!hasConflictGen(arr, idx, n)) {
+                arr[idx] = n;
+                solve(idx + 1);
+                arr[idx] = 0;
+            }
+        }
+    };
+    solve(0);
+    return solutions;
+}
 
 function stopTimer() { clearInterval(timerInt); timerVal = 0; document.getElementById('timer').textContent = "00:00"; }
 
@@ -262,25 +308,69 @@ function togglePause() { paused = !paused; document.getElementById('pause-overla
 
 function validateStatus() {
     const label = document.getElementById('status-label');
-    if (board.every(c => c.val === 0)) { label.textContent = "Enter Digits..."; label.style.color = "var(--text-main)"; return; }
-    const err = board.some((_, i) => hasConflict(board, i, board[i].val));
-    label.textContent = err ? "Invalid Rules" : "Unique Puzzle";
-    label.style.color = err ? "var(--danger)" : "var(--success)";
+    const currentBoard = board.map(c => c.val);
+    const filledCount = currentBoard.filter(v => v !== 0).length;
+
+    if (filledCount === 0) {
+        label.textContent = "Enter Digits...";
+        label.style.color = "var(--text-main)";
+        return;
+    }
+
+    const solutions = countSolutions([...currentBoard]);
+    if (solutions === 1) {
+        label.textContent = "Unique Puzzle";
+        label.style.color = "var(--success)";
+    } else if (solutions > 1) {
+        label.textContent = "Multiple Solutions";
+        label.style.color = "#f1c40f"; // Yellow warning
+    } else {
+        label.textContent = "No Valid Solution";
+        label.style.color = "var(--danger)";
+    }
 }
 
+// FIX: Improved Generate Logic with Uniqueness Check
 function generateNew() {
     initBoard();
     let flat = Array(size * size).fill(0);
+    
+    // 1. Fill a complete valid board
     const fill = (idx) => {
         if (idx === size * size) return true;
         let nums = Array.from({length: size}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
-        for (let n of nums) { if (!hasConflictGen(flat, idx, n)) { flat[idx] = n; if (fill(idx + 1)) return true; flat[idx] = 0; } }
+        for (let n of nums) {
+            if (!hasConflictGen(flat, idx, n)) {
+                flat[idx] = n;
+                if (fill(idx + 1)) return true;
+                flat[idx] = 0;
+            }
+        }
         return false;
     };
     fill(0);
+
+    // 2. Remove numbers based on difficulty while checking uniqueness
     const diff = document.getElementById('diff').value;
-    const limit = diff === 'easy' ? 35 : (diff === 'medium' ? 45 : 55);
-    for(let i=0; i<limit; i++) { flat[Math.floor(Math.random()*size*size)] = 0; }
+    const targetEmpty = diff === 'easy' ? 35 : (diff === 'medium' ? 45 : 55);
+    let attempts = size * size;
+    let removed = 0;
+
+    let indices = Array.from({length: size * size}, (_, i) => i).sort(() => Math.random() - 0.5);
+
+    for (let i of indices) {
+        if (removed >= targetEmpty) break;
+        let backup = flat[i];
+        flat[i] = 0;
+        
+        // Count solutions to ensure it's still unique
+        if (countSolutions([...flat]) !== 1) {
+            flat[i] = backup; // Put it back if removing it makes it non-unique
+        } else {
+            removed++;
+        }
+    }
+
     flat.forEach((v, i) => { board[i].val = v; board[i].given = (v !== 0); });
     updateUI();
 }
