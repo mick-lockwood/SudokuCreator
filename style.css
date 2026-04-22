@@ -45,7 +45,12 @@ h1 { margin-bottom: 20px; font-size: 2.5rem; color: var(--text-main); display: f
 body.dark-mode .clear-color-btn { background: #334155; color: white; }
 
 #grid-wrapper { padding: 5px; background: var(--grid-line); border-radius: 8px; position: relative; }
-.grid { display: grid; background: var(--grid-line); gap: 1px; border: 2px solid var(--grid-line); }
+.grid { 
+    display: grid; 
+    background-color: var(--grid-line); 
+    gap: 1px; 
+    border: 2px solid var(--grid-line); 
+}
 .cell {
     width: var(--cell-size); height: var(--cell-size); background-color: var(--card-bg);
     display: flex; align-items: center; justify-content: center;
