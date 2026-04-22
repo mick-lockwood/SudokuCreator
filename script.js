@@ -290,12 +290,13 @@ function countSolutions(boardArray, count = 0) {
     let pos = boardArray.indexOf(0);
     if (pos === -1) return count + 1;
 
-    for (let n = 1; n <= 9; n++) {
+    // Use 'size' instead of '9'
+    for (let n = 1; n <= size; n++) { 
         if (!hasConflictGen(boardArray, pos, n)) {
             boardArray[pos] = n;
             count = countSolutions(boardArray, count);
             boardArray[pos] = 0;
-            if (count > 1) return count; // Optimization: stop if more than 1 found
+            if (count > 1) return count; 
         }
     }
     return count;
