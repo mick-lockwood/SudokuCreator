@@ -286,22 +286,19 @@ function startTimer() {
 }
 
 // FIX: Unique Puzzle Indicator Logic
-function countSolutions(arr, limit = 2) {
-    let solutions = 0;
-    const solve = (idx) => {
-        if (idx === size * size) { solutions++; return; }
-        if (arr[idx] !== 0) { solve(idx + 1); return; }
-        for (let n = 1; n <= size; n++) {
-            if (solutions >= limit) return;
-            if (!hasConflictGen(arr, idx, n)) {
-                arr[idx] = n;
-                solve(idx + 1);
-                arr[idx] = 0;
-            }
+function countSolutions(boardArray, count = 0) {
+    let pos = boardArray.indexOf(0);
+    if (pos === -1) return count + 1;
+
+    for (let n = 1; n <= 9; n++) {
+        if (!hasConflictGen(boardArray, pos, n)) {
+            boardArray[pos] = n;
+            count = countSolutions(boardArray, count);
+            boardArray[pos] = 0;
+            if (count > 1) return count; // Optimization: stop if more than 1 found
         }
-    };
-    solve(0);
-    return solutions;
+    }
+    return count;
 }
 
 function stopTimer() { clearInterval(timerInt); timerVal = 0; document.getElementById('timer').textContent = "00:00"; }
