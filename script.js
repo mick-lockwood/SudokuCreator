@@ -4,6 +4,7 @@ let board = [];
 let timerVal = 0;
 let timerInt = null;
 let undoStack = [], redoStack = [];
+let confettiActive = false;
 
 const colors = ['#fff9c4', '#ffecb3', '#ffe0b2', '#ffcdd2', '#f8bbd0', '#e1bee7', '#d1c4e9', '#bbdefb', '#b3e5fc', '#b2ebf2', '#b2dfdb', '#c8e6c9', '#fff176', '#ffd54f', '#ffb74d', '#ef9a9a', '#f48fb1', '#ce93d8'];
 
