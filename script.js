@@ -375,15 +375,30 @@ function generateNew() {
 }
 
 function hasConflictGen(arr, idx, val) {
-    let r = Math.floor(idx / 9), c = idx % 9;
-    let br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
-    for (let i = 0; i < 9; i++) {
-        // Check Row, Column, and 3x3 Box
-        if (arr[r * 9 + i] === val || arr[i * 9 + c] === val || 
-            arr[(br + Math.floor(i / 3)) * 9 + (bc + i % 3)] === val) return true;
+    const r = Math.floor(idx / size);
+    const c = idx % size;
+
+    // BOX DIMENSIONS: 9x9 uses 3x3, 6x6 uses 2x3
+    const boxHeight = (size === 6) ? 2 : 3;
+    const boxWidth = (size === 6) ? 3 : 3;
+
+    const br = Math.floor(r / boxHeight) * boxHeight;
+    const bc = Math.floor(c / boxWidth) * boxWidth;
+
+    for (let i = 0; i < size; i++) {
+        // 1. Check Row
+        if (arr[r * size + i] === val) return true;
+        // 2. Check Column
+        if (arr[i * size + c] === val) return true;
+        
+        // 3. Check Box (Rectangular or Square)
+        let boxRow = br + Math.floor(i / boxWidth);
+        let boxCol = bc + (i % boxWidth);
+        if (arr[boxRow * size + boxCol] === val) return true;
     }
     return false;
 }
+
 function checkWin() {
     if (board.every(c => c.val !== 0) && !board.some((_, i) => hasConflict(board, i, board[i].val))) {
         isWon = true; clearInterval(timerInt);
