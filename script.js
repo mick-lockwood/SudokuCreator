@@ -423,7 +423,10 @@ window.addEventListener('keydown', (e) => {
 });
 
 // Start the app
-document.addEventListener('DOMContentLoaded', () => {
+window.onload = function() {
+    console.log("App starting..."); // This will show in your console to confirm JS is running
     initHighlighter();
-    setGridSize(9); // This will also call initBoard() and renderGrid()
-});
+    setGridSize(9); 
+    // Force a UI update to be sure
+    updateUI();
+};
