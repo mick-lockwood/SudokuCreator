@@ -418,6 +418,17 @@ function restartSameLevel() {
     isWon = false; paused = false; startTimer(); updateUI();
 }
 
+function hideWinOverlay() {
+    stopConfetti();
+    document.getElementById('win-overlay').style.display = 'none';
+    document.getElementById('return-win-btn').style.display = 'block';
+}
+
+function showWinOverlay() {
+    document.getElementById('win-overlay').style.display = 'flex';
+    document.getElementById('return-win-btn').style.display = 'none';
+}
+
 function exitToCreate() { initBoard(); setAppMode('create'); }
 
 window.addEventListener('keydown', (e) => {
@@ -441,6 +452,56 @@ window.addEventListener('keydown', (e) => {
     if (key === 'z') { if (e.shiftKey) redo(); else undo(); }
     if (key === 'n' && mode === 'solve') { pencil = !pencil; renderNumpad(); }
 });
+
+function fireConfetti() {
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth; 
+    canvas.height = window.innerHeight;
+    let particles = [];
+    const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6', '#e67e22'];
+    
+    for (let i = 0; i < 150; i++) {
+        particles.push({
+            x: Math.random() * canvas.width, 
+            y: Math.random() * canvas.height - canvas.height,
+            size: Math.random() * 8 + 4, 
+            color: colors[Math.floor(Math.random() * colors.length)],
+            velX: Math.random() * 4 - 2, 
+            velY: Math.random() * 10 + 5, 
+            angle: Math.random() * 360
+        });
+    }
+    confettiActive = true;
+    function draw() {
+        if (!confettiActive) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            return;
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p, i) => {
+            p.y += p.velY; p.x += p.velX; p.angle += 5;
+            ctx.save(); 
+            ctx.translate(p.x, p.y); 
+            ctx.rotate(p.angle * Math.PI / 180);
+            ctx.fillStyle = p.color; 
+            ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size); 
+            ctx.restore();
+            if (p.y > canvas.height) particles[i].y = -20;
+        });
+        requestAnimationFrame(draw);
+    }
+    draw();
+}
+
+function stopConfetti() {
+    confettiActive = false;
+    const canvas = document.getElementById('confetti');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+}
 
 // Start the app
 window.onload = function() {
