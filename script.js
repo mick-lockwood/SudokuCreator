@@ -374,12 +374,16 @@ function generateNew() {
     updateUI();
 }
 
-function hasConflictGen(f, id, v) {
-    const r = Math.floor(id/size), c = id%size, br = Math.floor(r/bH)*bH, bc = Math.floor(c/bW)*bW;
-    for(let i=0; i<size*size; i++) { if(f[i] === v) { const tr = Math.floor(i/size), tc = i%size; if(tr === r || tc === c || (tr >= br && tr < br+bH && tc >= bc && tc < bc+bW)) return true; } }
+function hasConflictGen(arr, idx, val) {
+    let r = Math.floor(idx / 9), c = idx % 9;
+    let br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
+    for (let i = 0; i < 9; i++) {
+        // Check Row, Column, and 3x3 Box
+        if (arr[r * 9 + i] === val || arr[i * 9 + c] === val || 
+            arr[(br + Math.floor(i / 3)) * 9 + (bc + i % 3)] === val) return true;
+    }
     return false;
 }
-
 function checkWin() {
     if (board.every(c => c.val !== 0) && !board.some((_, i) => hasConflict(board, i, board[i].val))) {
         isWon = true; clearInterval(timerInt);
