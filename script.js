@@ -350,10 +350,14 @@ function generateNew() {
     };
     fill(0);
 
-    // 2. Remove numbers based on difficulty while checking uniqueness
+    // 2. Remove numbers based on difficulty while checking uniqueness based on a percentage of the total board
     const diff = document.getElementById('diff').value;
-    const targetEmpty = diff === 'easy' ? 35 : (diff === 'medium' ? 45 : 55);
-    let attempts = size * size;
+    const totalCells = size * size;
+
+    // Easy: ~45% empty | Medium: ~55% empty | Hard: ~65% empty
+    const percentage = diff === 'easy' ? 0.45 : (diff === 'medium' ? 0.55 : 0.65);
+    const targetEmpty = Math.floor(totalCells * percentage);
+
     let removed = 0;
 
     let indices = Array.from({length: size * size}, (_, i) => i).sort(() => Math.random() - 0.5);
