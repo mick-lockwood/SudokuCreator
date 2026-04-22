@@ -52,7 +52,11 @@ body.dark-mode .clear-color-btn { background: #334155; color: white; }
     border: 2px solid var(--grid-line); 
 }
 .cell {
-    width: var(--cell-size); height: var(--cell-size); background-color: var(--card-bg);
+    width: var(--cell-size);
+    height: var(--cell-size);
+    min-width: 50px;
+    min-height: 50px;
+    background-color: var(--card-bg);
     display: flex; align-items: center; justify-content: center;
     font-size: 24px; font-weight: 700; cursor: pointer; user-select: none; position: relative;
     color: var(--text-main); transition: background 0.1s;
