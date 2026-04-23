@@ -174,12 +174,14 @@ function renderGrid() {
         const div = document.createElement('div');
         div.className = 'cell'; 
         div.id = `cell-${i}`;
+        
         const r = Math.floor(i / size), c = i % size;
+        
+        // Visual logic for the thicker grid lines
         if ((c + 1) % bW === 0 && c < size - 1) div.style.borderRight = `3px solid ${gridLine}`;
         if ((r + 1) % bH === 0 && r < size - 1) div.style.borderBottom = `3px solid ${gridLine}`;
-        container.appendChild(div);
   
-        // ROBUST FIX: Pointer events handle mouse, touch, and pen.
+        // Pointer event listeners for selection and dragging
         div.addEventListener('pointerdown', (e) => {
             if (paused || isWon) return;
             // releasePointerCapture allows 'pointerenter' to fire on sibling elements while dragging
