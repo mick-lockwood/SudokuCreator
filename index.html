@@ -67,12 +67,24 @@
                     <p id="final-time" style="margin-bottom: 10px; font-weight: 800; font-size: 18px;"></p>
                     <div style="display: flex; flex-direction: column; gap: 8px; width: 90%;">
                         <button class="btn btn-primary" style="background: var(--success);" onclick="restartSameLevel()">Play Again (Same Board)</button>
-                        <button class="btn btn-secondary" onclick="hideWinOverlay()">View My Solve</button>
-                        <button class="btn btn-secondary" style="background: var(--dark);" onclick="exitToCreate()">Back to Create Mode</button>
+                        
+                        <div class="win-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; width: 100%;">
+                            <div style="grid-column: span 3; font-size: 10px; font-weight: 800; text-transform: uppercase; color: #64748b; margin-top: 5px;">New 6x6 Game</div>
+                            <button class="btn btn-secondary" style="padding: 10px 2px; font-size: 10px; background: #64748b; color: white; border:none; border-radius: 8px;" onclick="generateWithDiff(6, 'easy')">Easy</button>
+                            <button class="btn btn-secondary" style="padding: 10px 2px; font-size: 10px; background: #64748b; color: white; border:none; border-radius: 8px;" onclick="generateWithDiff(6, 'medium')">Medium</button>
+                            <button class="btn btn-secondary" style="padding: 10px 2px; font-size: 10px; background: #64748b; color: white; border:none; border-radius: 8px;" onclick="generateWithDiff(6, 'hard')">Hard</button>
+                            
+                            <div style="grid-column: span 3; font-size: 10px; font-weight: 800; text-transform: uppercase; color: #64748b; margin-top: 5px;">New 9x9 Game</div>
+                            <button class="btn btn-secondary" style="padding: 10px 2px; font-size: 10px; background: #64748b; color: white; border:none; border-radius: 8px;" onclick="generateWithDiff(9, 'easy')">Easy</button>
+                            <button class="btn btn-secondary" style="padding: 10px 2px; font-size: 10px; background: #64748b; color: white; border:none; border-radius: 8px;" onclick="generateWithDiff(9, 'medium')">Medium</button>
+                            <button class="btn btn-secondary" style="padding: 10px 2px; font-size: 10px; background: #64748b; color: white; border:none; border-radius: 8px;" onclick="generateWithDiff(9, 'hard')">Hard</button>
+                        </div>
+                
+                        <button class="btn btn-secondary" style="background: #64748b; color: white; border:none; padding: 12px; border-radius: 10px;" onclick="hideWinOverlay()">View My Solve</button>
+                        <button class="btn btn-secondary" style="background: var(--dark); color: white; border:none; padding: 12px; border-radius: 10px;" onclick="exitToCreate()">Back to Create Mode</button>
                     </div>
                 </div>
-                <div id="return-win-btn" onclick="showWinOverlay()" style="display:none;">Show Result Options</div>
-            </div>
+                <div id="return-win-btn" onclick="showWinOverlay()" style="display:none; margin-top: 15px; color: var(--primary); font-weight: 800; cursor: pointer; text-decoration: underline; text-align: center;">Show Result Options</div>
 
             <div class="numpad" id="numpad" style="margin-top: 30px; width: 100%;"></div>
         </div> 
