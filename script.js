@@ -10,9 +10,9 @@ let currentDifficulty = 'medium'; // Tracks the active difficulty level
 // Highlighter Color Palette 
 // (Laid out in rows of 3 to match the UI grid)
 const colors = [
-    '#fff9c4', '#ffecb3', '#ffe0b2', // Row 1: Yellows/Oranges
-    '#ffcdd2', '#f8bbd0', '#e1bee7', // Row 2: Reds/Pinks/Purples
-    '#d1c4e9', '#bbdefb', '#b3e5fc', // Row 3: Lavenders/Blues
+    '#f59896', '#9cdcf9', '#dee787', // Row 1: Red/LightBlue/LightGreen
+    '#fdc689', '#c7bbdc', '#fff799', // Row 2: Orange/Lavender/Yellow
+    '#f6adcd', '#e7e7e8', '#c0e2ca', // Row 3: Pink/Grey/SageGreen
     '#b2ebf2', '#b2dfdb', '#c8e6c9', // Row 4: Cyans/Teals/Greens
     '#fff176', '#ffd54f', '#ffb74d', // Row 5: Vibrant Yellows/Oranges
     '#ef9a9a', '#f48fb1', '#ce93d8'  // Row 6: Vibrant Reds/Pinks/Purples
