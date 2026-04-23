@@ -133,6 +133,17 @@ body.dark-mode .toggle-group {
     border-radius: 8px; 
     cursor: pointer; 
     font-weight: 600; 
+    background: #f1f5f9; 
+    color: #94a3b8; 
+    transition: all 0.2s;
+}
+
+body.dark-mode .toggle-group button { 
+    border: none; 
+    padding: 10px 18px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-weight: 600; 
     background: #1e293b; 
     color: #94a3b8; 
     transition: all 0.2s;
