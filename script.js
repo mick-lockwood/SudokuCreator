@@ -10,12 +10,14 @@ let currentDifficulty = 'medium'; // Tracks the active difficulty level
 // Highlighter Color Palette 
 // (Laid out in rows of 3 to match the UI grid)
 const colors = [
+    // Standard Colors
     '#f59896', '#9cdcf9', '#dee787', // Row 1: Red/LightBlue/LightGreen
     '#fdc689', '#c7bbdc', '#fff799', // Row 2: Orange/Lavender/Yellow
     '#f6adcd', '#e7e7e8', '#c0e2ca', // Row 3: Pink/Grey/SageGreen
-    '#b2ebf2', '#b2dfdb', '#c8e6c9', // Row 4: Cyans/Teals/Greens
-    '#fff176', '#ffd54f', '#ffb74d', // Row 5: Vibrant Yellows/Oranges
-    '#ef9a9a', '#f48fb1', '#ce93d8'  // Row 6: Vibrant Reds/Pinks/Purples
+    // Vibrant Colors
+    '#f16865', '#64c9f6', '#c4d42a', // Row 4: Vibrant Red/LightBlue/LightGreen
+    '#fca74a', '#a693c7', '#fff02f', // Row 5: Vibrant Orange/Lavender/Yellow
+    '#f17fb0', '#bdbdbf', '#8cca9e'  // Row 6: Vibrant Pink/Grey/SageGreen
 ];
 
 function toggleDarkMode() {
