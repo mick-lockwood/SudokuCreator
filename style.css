@@ -47,9 +47,17 @@ body.dark-mode .side-panel h3 {
 }
 
 .main-card {
-    background: var(--card-bg); padding: 30px; border-radius: 24px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.05); width: 100%; max-width: 550px;
-    display: flex; flex-direction: column; gap: 20px; align-items: center; margin-bottom: 30px;
+    background: var(--card-bg); 
+    padding: 30px; 
+    border-radius: 24px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.05); 
+    width: 100%; 
+    max-width: 550px;
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+    align-items: center; 
+    margin-bottom: 30px;
 }
 
 .switch-label { display: flex; align-items: center; justify-content: space-between; font-size: 11px; font-weight: 800; cursor: pointer; color: #64748b; }
@@ -104,12 +112,52 @@ body.dark-mode .cell.error { color: #fb923c !important; }
 body.dark-mode .pencil-num { font-size: 12px; color: #f8fafc; font-weight: bold; }
 body.dark-mode .pencil-num.error { font-size: 10px; color: #fb923c !important; font-weight: bold; }
 
-.row { display: flex; gap: 12px; align-items: center; justify-content: center; width: 100%; }
-.toggle-group { display: flex; background: #f1f5f9; border-radius: 12px; padding: 5px; }
-body.dark-mode .toggle-group { background: #334155; }
-.toggle-group button { border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; background: transparent; color: #64748b; }
-.toggle-group button.active { background: white; color: var(--dark); }
-body.dark-mode .toggle-group button.active { background: #475569; color: white; }
+.row { 
+    display: flex; gap: 12px; align-items: center; justify-content: center; width: 100%; 
+}
+
+.toggle-group { 
+    display: flex; 
+    background: #f1f5f9; 
+    border-radius: 12px; 
+    padding: 5px; 
+}
+
+body.dark-mode .toggle-group { 
+    background: #1e293b; 
+}
+
+.toggle-group button { 
+    border: none; 
+    padding: 10px 18px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-weight: 600; 
+    background: transparent; 
+    color: #94a3b8; 
+    transition: all 0.2s;
+}
+
+/* Hover effect for unselected buttons */
+.toggle-group button:not(.active):hover {
+    color: var(--dark);
+}
+
+body.dark-mode .toggle-group button:not(.active):hover {
+    color: #ffffff;
+}
+
+.toggle-group button.active { 
+    background: white; 
+    color: var(--dark); 
+    pointer-events: none; /* Prevents re-clicking the active mode */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+body.dark-mode .toggle-group button.active { 
+    background: #475569; 
+    color: white; 
+}
 
 .btn { padding: 12px 24px; cursor: pointer; border-radius: 10px; border: none; font-weight: 700; transition: 0.2s; }
 .btn-primary { background: #3498db; color: #ffffff; }
