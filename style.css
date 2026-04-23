@@ -163,6 +163,7 @@ body.dark-mode .toggle-group button:not(.active):hover {
     color: var(--dark); 
     pointer-events: none; /* Prevents re-clicking the active mode */
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transform: scale(0.95);
 }
 
 body.dark-mode .toggle-group button.active { 
