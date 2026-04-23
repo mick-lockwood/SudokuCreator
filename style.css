@@ -9,7 +9,7 @@
 body.dark-mode {
     --bg-color: #0f172a; --text-main: #ffffff;
     --primary: #ffffff; --card-bg: #1e293b;
-    --grid-line: #475569; 
+    --grid-line: #ffffff; 
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
