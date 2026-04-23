@@ -7,7 +7,16 @@ let undoStack = [], redoStack = [];
 let confettiActive = false; // Controls the animation loop
 let currentDifficulty = 'medium'; // Tracks the active difficulty level
 
-const colors = ['#fff9c4', '#ffecb3', '#ffe0b2', '#ffcdd2', '#f8bbd0', '#e1bee7', '#d1c4e9', '#bbdefb', '#b3e5fc', '#b2ebf2', '#b2dfdb', '#c8e6c9', '#fff176', '#ffd54f', '#ffb74d', '#ef9a9a', '#f48fb1', '#ce93d8'];
+// Highlighter Color Palette 
+// (Laid out in rows of 3 to match the UI grid)
+const colors = [
+    '#fff9c4', '#ffecb3', '#ffe0b2', // Row 1: Yellows/Oranges
+    '#ffcdd2', '#f8bbd0', '#e1bee7', // Row 2: Reds/Pinks/Purples
+    '#d1c4e9', '#bbdefb', '#b3e5fc', // Row 3: Lavenders/Blues
+    '#b2ebf2', '#b2dfdb', '#c8e6c9', // Row 4: Cyans/Teals/Greens
+    '#fff176', '#ffd54f', '#ffb74d', // Row 5: Vibrant Yellows/Oranges
+    '#ef9a9a', '#f48fb1', '#ce93d8'  // Row 6: Vibrant Reds/Pinks/Purples
+];
 
 function toggleDarkMode() {
     darkMode = !darkMode;
