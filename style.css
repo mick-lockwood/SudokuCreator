@@ -220,4 +220,5 @@ body.dark-mode .win-grid-label {
     text-align: center;
     border-bottom-left-radius: 8px;  /* Match your wrapper corners */
     border-bottom-right-radius: 8px;
+    body.dark-mode color: var(--text-main);
 }
