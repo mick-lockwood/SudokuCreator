@@ -43,7 +43,11 @@ A feature-rich, vanilla JavaScript Sudoku engine designed for both puzzle creati
 
 ## 📥 Installation & Usage
 No installation is required. This project runs entirely in the browser.
+
 [https://mick-lockwood.github.io/SudokuLogic/]
+
+or
+
 1. Clone the repository.
 2. Open `index.html` in any modern web browser.
 
