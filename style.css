@@ -89,6 +89,7 @@ body.dark-mode .switch-label { color: #f8fafc; }
 .cell {
     width: var(--cell-size);
     height: var(--cell-size);
+    box-sizing: border-box;
     min-width: 50px;
     min-height: 50px;
     background-color: var(--card-bg);
