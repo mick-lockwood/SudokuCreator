@@ -36,7 +36,7 @@ function initBoard() {
     board = Array.from({ length: size * size }, () => ({ val: 0, given: false, notes: [], color: null }));
     undoStack = []; redoStack = [];
     selected = null; isWon = false; paused = false;
-    stopTimer();
+    resetTimer();
     document.getElementById('difficulty-badge').style.display = 'none';
     document.getElementById('win-overlay').style.display = 'none';
     document.getElementById('pause-overlay').style.display = 'none';
@@ -479,7 +479,13 @@ function generateWithDiff(s, d) {
 function restartSameLevel() {
     board.forEach(c => { if (!c.given) { c.val = 0; c.notes = []; c.color = null; } });
     document.getElementById('win-overlay').style.display = 'none';
-    isWon = false; paused = false; startTimer(); updateUI();
+    isWon = false; 
+    paused = false; 
+    
+    resetTimer(); // Clean the clock
+    startTimer(); // Start fresh 
+    
+    updateUI();
 }
 
 function hideWinOverlay() {
