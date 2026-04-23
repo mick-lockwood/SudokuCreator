@@ -60,17 +60,21 @@ body.dark-mode .clear-color-btn { background: #334155; color: white; }
 body.dark-mode .switch-label { color: #f8fafc; }
 
 #grid-wrapper { 
-    background: var(--grid-line); 
-    border-radius: 12px; /* Smoother curve for the outer frame */
-    position: relative; 
-    overflow: hidden; /* Prevents cell backgrounds from bleeding over corners */
-    padding: 2px; /* Single consistent outer border */
+    padding: 5px;
+    background: var(--grid-line); /* This ensures the 'frame' matches the theme */
+    border-radius: 8px;
+    position: relative;
+    display: flex;         /* Add this to collapse extra space */
+    flex-direction: column;
+    align-items: center;
 }
 
 .grid { 
     display: grid; 
     background-color: var(--grid-line); 
     gap: 1px; /* The thickness of the internal grid lines */
+    border: 2px solid var(--grid-line);
+    width: fit-content;    /* Ensures the grid doesn't stretch the wrapper */
 }
 
 .cell {
@@ -206,10 +210,14 @@ body.dark-mode .win-grid-label {
 
 /* Return button styling */
 #return-win-btn {
-    margin-top: 15px; 
-    color: var(--primary); 
-    font-weight: 800; 
-    cursor: pointer; 
+    width: 100%;
+    background: var(--dark); /* Matches the footer bar seen in your screenshot */
+    color: var(--text-main);
+    padding: 15px 0;
+    font-weight: 800;
+    cursor: pointer;
     text-decoration: underline;
     text-align: center;
+    border-bottom-left-radius: 8px;  /* Match your wrapper corners */
+    border-bottom-right-radius: 8px;
 }
