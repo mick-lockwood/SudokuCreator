@@ -375,8 +375,6 @@ function generateNew() {
     currentDifficulty = document.getElementById('diff').value;
     document.getElementById('difficulty-badge').textContent = currentDifficulty;
     document.getElementById('difficulty-badge').style.display = 'inline-block';
-    if (mode === 'solve') {
-        startTimer(); // Only restart once the board is ready
         
     // 1. Fill a complete valid board
     const fill = (idx) => {
@@ -393,7 +391,7 @@ function generateNew() {
     };
     fill(0);
 
-    // 2. Remove numbers based on difficulty while checking uniqueness based on a percentage of the total board
+    // 2. Remove numbers based on difficulty while checking uniqueness
     const diff = document.getElementById('diff').value;
     const totalCells = size * size;
 
@@ -402,7 +400,6 @@ function generateNew() {
     const targetEmpty = Math.floor(totalCells * percentage);
 
     let removed = 0;
-
     let indices = Array.from({length: size * size}, (_, i) => i).sort(() => Math.random() - 0.5);
 
     for (let i of indices) {
@@ -412,14 +409,24 @@ function generateNew() {
         
         // Count solutions to ensure it's still unique
         if (countSolutions([...flat]) !== 1) {
-            flat[i] = backup; // Put it back if removing it makes it non-unique
+            flat[i] = backup; 
         } else {
             removed++;
         }
     }
 
-    flat.forEach((v, i) => { board[i].val = v; board[i].given = (v !== 0); });
+    // Apply the generated flat array to the actual game board
+    flat.forEach((v, i) => { 
+        board[i].val = v; 
+        board[i].given = (v !== 0); 
+    });
+
     updateUI();
+
+    // Start the timer ONLY if we are in solve mode and the board is ready
+    if (mode === 'solve') {
+        startTimer(); 
+    }
 }
 
 function hasConflictGen(arr, idx, val) {
