@@ -43,6 +43,7 @@ h1 { margin-bottom: 20px; font-size: 2.5rem; color: var(--text-main); display: f
 .color-btn { width: 40px; height: 40px; border-radius: 8px; border: 2px solid #f1f5f9; cursor: pointer; transition: 0.2s; }
 .clear-color-btn { padding: 8px; font-size: 10px; font-weight: 700; background: #f1f5f9; border: none; border-radius: 6px; cursor: pointer; }
 body.dark-mode .clear-color-btn { background: #334155; color: white; }
+body.dark-mode .switch-label { color: var(--text-main); }
 
 #grid-wrapper { padding: 5px; background: var(--grid-line); border-radius: 8px; position: relative; }
 .grid { 
@@ -93,6 +94,43 @@ body.dark-mode .n-btn { border-color: #334155; }
 .n-btn.pencil-active { background: var(--pencil-active) !important; color: #000000 !important; border-color: #d4ac0d; }
 
 .overlay { position: absolute; inset: 0; background: var(--card-bg); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; border-radius: 8px; }
+
+/* Status labels and footer links */
+#status-label, #timer, #difficulty-badge {
+    color: var(--text-main);
+}
+
+.main-card a, .main-card span {
+    color: var(--text-main);
+}
+
+/* Links like "Reset Puzzle" / "Clear User Inputs" */
+.main-card .row div {
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b; /* Grey for light mode */
+    cursor: pointer;
+}
+
+body.dark-mode .main-card .row div {
+    color: var(--text-main);
+}
+
+/* Difficulty Badge Styling */
+#difficulty-badge {
+    background: #e2e8f0; /* Light grey pill */
+    color: #475569;      /* Dark grey text */
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+body.dark-mode #difficulty-badge {
+    background: #334155; /* Darker pill in dark mode */
+    color: #ffffff;      /* White text in dark mode */
+}
 
 /* Ghosting effect for disabled buttons */
 .n-btn:disabled { 
