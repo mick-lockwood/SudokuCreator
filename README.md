@@ -7,8 +7,9 @@ A feature-rich, vanilla JavaScript Sudoku engine designed for both puzzle creati
 ## 🚀 Features
 
 ### 🧩 Game Engine
-* **Dual Modes:** * **CREATE Mode:** Manually input digits to build a custom puzzle. Features real-time validation (Unique, Multiple Solutions, or No Solution).
-    * **SOLVE Mode:** Play generated or custom-built puzzles with a timer and progress tracking.
+* **Dual Modes:**
+   * **CREATE Mode:** Manually input digits to build a custom puzzle. Features real-time validation (Unique, Multiple Solutions, or No Solution).
+   * **SOLVE Mode:** Play generated or custom-built puzzles with a timer and progress tracking.
 * **Unique Puzzle Generation:** Recursive backtracking algorithm that ensures every generated puzzle has exactly one solution.
 * **Multiple Grid Sizes:** Support for standard **9x9** (3x3 blocks) and **6x6** (2x3 blocks) layouts.
 * **Difficulty Scaling:** Generate puzzles across three difficulty tiers: **Easy, Medium, and Hard**, with an active difficulty badge visible in both modes.
