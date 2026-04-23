@@ -4,7 +4,8 @@ let board = [];
 let timerVal = 0;
 let timerInt = null;
 let undoStack = [], redoStack = [];
-let confettiActive = false;
+let confettiActive = false; // Controls the animation loop
+let currentDifficulty = 'medium'; // Tracks the active difficulty level
 
 const colors = ['#fff9c4', '#ffecb3', '#ffe0b2', '#ffcdd2', '#f8bbd0', '#e1bee7', '#d1c4e9', '#bbdefb', '#b3e5fc', '#b2ebf2', '#b2dfdb', '#c8e6c9', '#fff176', '#ffd54f', '#ffb74d', '#ef9a9a', '#f48fb1', '#ce93d8'];
 
@@ -335,6 +336,10 @@ function validateStatus() {
 function generateNew() {
     initBoard();
     let flat = Array(size * size).fill(0);
+    
+    currentDifficulty = document.getElementById('diff').value;
+    document.getElementById('difficulty-badge').textContent = currentDifficulty;
+    document.getElementById('difficulty-badge').style.display = (mode === 'solve') ? 'inline-block' : 'none';
     
     // 1. Fill a complete valid board
     const fill = (idx) => {
