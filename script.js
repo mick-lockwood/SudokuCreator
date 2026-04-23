@@ -137,7 +137,7 @@ function renderGrid() {
     const container = document.getElementById('grid');
     container.innerHTML = '';
     container.style.gridTemplateColumns = `repeat(${size}, var(--cell-size))`;
-    const gridLine = darkMode ? "#475569" : "#1e293b";
+    const gridLine = darkMode ? "#475569" : "#ffffff";
     document.getElementById('grid-wrapper').style.background = gridLine;
     container.style.background = gridLine;
 
