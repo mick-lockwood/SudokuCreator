@@ -59,13 +59,20 @@ body.dark-mode .side-panel h3 {
 body.dark-mode .clear-color-btn { background: #334155; color: white; }
 body.dark-mode .switch-label { color: #f8fafc; }
 
-#grid-wrapper { padding: 5px; background: var(--grid-line); border-radius: 8px; position: relative; }
+#grid-wrapper { 
+    background: var(--grid-line); 
+    border-radius: 12px; /* Smoother curve for the outer frame */
+    position: relative; 
+    overflow: hidden; /* Prevents cell backgrounds from bleeding over corners */
+    padding: 2px; /* Single consistent outer border */
+}
+
 .grid { 
     display: grid; 
     background-color: var(--grid-line); 
-    gap: 1px; 
-    border: 2px solid var(--grid-line); 
+    gap: 1px; /* The thickness of the internal grid lines */
 }
+
 .cell {
     width: var(--cell-size);
     height: var(--cell-size);
