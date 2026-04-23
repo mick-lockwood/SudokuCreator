@@ -75,6 +75,7 @@ body.dark-mode .switch-label { color: #f8fafc; }
     display: flex;         /* Add this to collapse extra space */
     flex-direction: column;
     align-items: center;
+    touch-action: none; /* Prevents the browser from scrolling the page when dragging
 }
 
 .grid { 
