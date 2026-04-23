@@ -269,27 +269,42 @@ function hasConflict(arr, idx, val) {
 }
 
 function setAppMode(m) {
-    if (mode === 'solve' && m === 'create') {
+    // 1. Guard Clause: Do nothing if already in this mode
+    if (m === mode) return;
+    
+    // 2. Gatekeeper: Only show confirm if moving from Solve -> Create AND game isn't already won
+    if (mode === 'solve' && m === 'create' && !isWon) {
         if (!confirm("Switching to Create Mode will reset the current puzzle and wipe your progress. Do you want to continue?")) {
-            return;
+            return; // User hit cancel, exit function here. Everything stays as is.
         }
     }
+
+    // 3. Update State
     mode = m; 
+    
+    // 4. Update UI Buttons & Visibility
     document.getElementById('modeCreate').classList.toggle('active', m === 'create');
     document.getElementById('modeSolve').classList.toggle('active', m === 'solve');
-    document.getElementById('gen-controls').style.display = (m === 'create') ? 'flex' : 'none';
-    document.getElementById('size-selector').style.display = (m === 'create') ? 'flex' : 'none';
-    document.getElementById('timer').style.display = (m === 'solve') ? 'block' : 'none';
-    document.getElementById('pause-btn').style.display = (m === 'solve') ? 'block' : 'none';
-    document.getElementById('clean-pencils-link').style.display = (m === 'solve') ? 'inline' : 'none';
     
+    // Toggle visibility of various game elements
+    const isCreate = (m === 'create');
+    document.getElementById('gen-controls').style.display = isCreate ? 'flex' : 'none';
+    document.getElementById('size-selector').style.display = isCreate ? 'flex' : 'none';
+    document.getElementById('timer').style.display = isCreate ? 'none' : 'block';
+    document.getElementById('pause-btn').style.display = isCreate ? 'none' : 'block';
+    document.getElementById('clean-pencils-link').style.display = isCreate ? 'none' : 'inline';
+    
+    // 5. Manage Timer and Board State
     if (m === 'solve') {
-        resetTimer(); // Clear any old data
-        startTimer(); // Fresh start
+        resetTimer(); 
+        startTimer(); 
+        // Note: We don't call initBoard here because usually you're 
+        // entering solve mode with an existing puzzle from create mode.
     } else {
-        resetTimer(); // Cleanly kill timer for Create mode
-        initBoard();
+        resetTimer(); 
+        initBoard(); // Only wipes the board if they actually move to Create mode
     }
+
     updateUI();
 }
 
@@ -499,7 +514,9 @@ function showWinOverlay() {
     document.getElementById('return-win-btn').style.display = 'none';
 }
 
-function exitToCreate() { initBoard(); setAppMode('create'); }
+function exitToCreate() { 
+       setAppMode('create'); 
+}
 
 window.addEventListener('keydown', (e) => {
     if (paused || isWon) return;
