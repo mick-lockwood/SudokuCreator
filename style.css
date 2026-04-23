@@ -1,14 +1,22 @@
 :root {
-    --cell-size: 52px; --bg-color: #f8fafc; --primary: #000000;
-    --danger: #e74c3c; --dark: #1e293b; --success: #2ecc71;
-    --card-bg: white; --text-main: #1e293b;
+    --cell-size: 52px; 
+    --bg-color: #f8fafc; 
+    --primary: #000000;
+    --danger: #e74c3c; 
+    --dark: #1e293b; 
+    --success: #2ecc71;
+    --card-bg: white; 
+    --text-main: #1e293b;
     --grid-line: #1e293b;
     --pencil-active: #f1c40f;
 }
 
 body.dark-mode {
-    --bg-color: #0f172a; --text-main: #ffffff;
-    --primary: #ffffff; --card-bg: #1e293b;
+    --bg-color: #0f172a; 
+    --primary: #ffffff;
+    --danger: #fb923c;
+    --card-bg: #1e293b;
+    --text-main: #ffffff;
     --grid-line: #ffffff; 
 }
 
@@ -76,7 +84,7 @@ body.dark-mode .switch-label { color: #f8fafc; }
 .cell.selected { outline: 2px solid var(--primary); outline-offset: -2px; z-index: 2; }
 body.dark-mode .cell.given { color: #38bdf8; font-weight: 800; }
 body.dark-mode .cell.user { color: #f8fafc; }
-body.dark-mode .cell.error { color: #fb7185 !important; }
+body.dark-mode .cell.error { color: #fb923c !important; }
 
 /* Pencil Mark Colors for Normal & Dark Mode */
 .pencil-grid { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; height: 100%; position: absolute; pointer-events: none; }
