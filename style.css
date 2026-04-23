@@ -270,14 +270,18 @@ body.dark-mode .win-grid-label {
 /* Return button styling */
 #return-win-btn {
     width: 100%;
-    background: var(--dark); /* Matches the footer bar seen in your screenshot */
+    background: var(--dark);
     color: #f8fafc;
     padding: 15px 0;
     font-weight: 800;
     cursor: pointer;
     text-decoration: underline;
     text-align: center;
-    border-bottom-left-radius: 8px;  /* Match your wrapper corners */
+    border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-    body.dark-mode color: var(--text-main);
+
+}
+
+body.dark-mode #return-win-btn {
+    color: var(--text-main);
 }
