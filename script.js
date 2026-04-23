@@ -1,5 +1,5 @@
 let size = 9, bW = 3, bH = 3;
-let mode = 'create', selected = null, pencil = false, paused = false, isWon = false, darkMode = false;
+let mode = 'create', pencil = false, paused = false, isWon = false, darkMode = false;
 let board = []; 
 let timerVal = 0;
 let timerInt = null;
@@ -37,8 +37,11 @@ function setGridSize(s) {
 
 function initBoard() {
     board = Array.from({ length: size * size }, () => ({ val: 0, given: false, notes: [], color: null }));
-    undoStack = []; redoStack = [];
-    selected = null; isWon = false; paused = false;
+    undoStack = []; 
+    redoStack = [];
+    selected = []; 
+    isWon = false; 
+    paused = false;
     resetTimer();
     document.getElementById('difficulty-badge').style.display = 'none';
     document.getElementById('win-overlay').style.display = 'none';
@@ -173,7 +176,6 @@ function renderGrid() {
         const r = Math.floor(i / size), c = i % size;
         if ((c + 1) % bW === 0 && c < size - 1) div.style.borderRight = `3px solid ${gridLine}`;
         if ((r + 1) % bH === 0 && r < size - 1) div.style.borderBottom = `3px solid ${gridLine}`;
-        div.onclick = () => { if(!paused && !isWon) { selected = i; updateUI(); } };
         container.appendChild(div);
   
         // ROBUST FIX: Pointer events handle mouse, touch, and pen.
