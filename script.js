@@ -6,6 +6,7 @@ let timerInt = null;
 let undoStack = [], redoStack = [];
 let confettiActive = false; // Controls the animation loop
 let currentDifficulty = 'medium'; // Tracks the active difficulty level
+let selected = [];
 
 // Highlighter Color Palette 
 // (Laid out in rows of 3 to match the UI grid)
@@ -59,8 +60,10 @@ function initHighlighter() {
 }
 
 function applyColor(c) {
-    if (selected === null || isWon || paused) return;
-    saveState(); board[selected].color = c; updateUI();
+    if (selected.length === 0 || isWon || paused) return;
+    saveState(); 
+    selected.forEach(idx => board[idx].color = c); 
+    updateUI();
 }
 
 function clearAllHighlights() {
@@ -89,9 +92,11 @@ function redo() {
 }
 
 function updateUI() {
-    const selVal = selected !== null ? board[selected].val : 0;
-    const selR = selected !== null ? Math.floor(selected / size) : -1;
-    const selC = selected !== null ? selected % size : -1;
+    // Set the "primary" active cell as the last one clicked/dragged over
+    const primaryActive = selected.length > 0 ? selected[selected.length - 1] : null;
+    const selVal = primaryActive !== null ? board[primaryActive].val : 0;
+    const selR = primaryActive !== null ? Math.floor(primaryActive / size) : -1;
+    const selC = primaryActive !== null ? primaryActive % size : -1;
     const selBlockR = selR !== -1 ? Math.floor(selR / bH) : -1;
     const selBlockC = selC !== -1 ? Math.floor(selC / bW) : -1;
     const showSeen = document.getElementById('toggle-seen')?.checked ?? true;
@@ -108,7 +113,8 @@ function updateUI() {
 
         let tint = "rgba(255, 255, 255, 0)"; 
         
-        if (i === selected) {
+        // Changed to check if 'i' is inside the array
+        if (selected.includes(i)) {
             el.classList.add('selected');
             tint = darkMode ? "rgba(56, 189, 248, 0.5)" : "rgba(52, 152, 219, 0.4)"; 
         } else if (showSeen && (r === selR || c === selC || (blockR === selBlockR && blockC === selBlockC))) {
@@ -162,13 +168,49 @@ function renderGrid() {
 
     board.forEach((cell, i) => {
         const div = document.createElement('div');
-        div.className = 'cell'; div.id = `cell-${i}`;
+        div.className = 'cell'; 
+        div.id = `cell-${i}`;
         const r = Math.floor(i / size), c = i % size;
         if ((c + 1) % bW === 0 && c < size - 1) div.style.borderRight = `3px solid ${gridLine}`;
         if ((r + 1) % bH === 0 && r < size - 1) div.style.borderBottom = `3px solid ${gridLine}`;
         div.onclick = () => { if(!paused && !isWon) { selected = i; updateUI(); } };
         container.appendChild(div);
+  
+        // ROBUST FIX: Pointer events handle mouse, touch, and pen.
+        div.addEventListener('pointerdown', (e) => {
+            if (paused || isWon) return;
+            // releasePointerCapture allows 'pointerenter' to fire on sibling elements while dragging
+            e.target.releasePointerCapture(e.pointerId); 
+            handleCellSelection(i, e.ctrlKey || e.metaKey, false);
+        });
+
+        div.addEventListener('pointerenter', (e) => {
+            if (paused || isWon) return;
+            // e.buttons === 1 ensures the primary button/finger is held down
+            if (e.buttons === 1) { 
+                handleCellSelection(i, true, true); 
+            }
+        });
+
+        // Prevent default context menu if they try to right-click drag
+        div.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        container.appendChild(div);
     });
+}
+
+function handleCellSelection(index, isMulti, isDragging) {
+    if (isMulti) {
+        if (!selected.includes(index)) {
+            selected.push(index);
+        } else if (!isDragging) {
+            // If CTRL+clicking an already selected cell, deselect it
+            selected = selected.filter(id => id !== index);
+        }
+    } else {
+        selected = [index]; 
+    }
+    updateUI();
 }
 
 function renderNumpad() {
@@ -204,25 +246,30 @@ function renderNumpad() {
 }
 
 function handleInput(num) {
-    if (selected === null || paused || isWon) return;
-    const cell = board[selected];
-    if (mode === 'solve' && cell.given) return;
+    if (selected.length === 0 || paused || isWon) return;
     
-    saveState();
-    if (pencil && mode === 'solve' && num !== 0) {
-        if (cell.val !== 0) return;
-        const pos = cell.notes.indexOf(num);
-        if (pos > -1) cell.notes.splice(pos, 1); else cell.notes.push(num);
-    } else {
-        cell.val = num; 
-        cell.notes = [];
-        cell.given = (mode === 'create' && num !== 0);
+    saveState(); // Save state once for the entire multi-cell action
+    
+    selected.forEach(idx => {
+        const cell = board[idx];
+        if (mode === 'solve' && cell.given) return;
         
-        // FIX: Automatic Pencil Cleaning
-        if (mode === 'solve' && num !== 0) {
-            cleanPencilsAfterMove(selected, num);
+        if (pencil && mode === 'solve' && num !== 0) {
+            if (cell.val !== 0) return;
+            const pos = cell.notes.indexOf(num);
+            if (pos > -1) cell.notes.splice(pos, 1); else cell.notes.push(num);
+        } else {
+            cell.val = num; 
+            cell.notes = [];
+            cell.given = (mode === 'create' && num !== 0);
+            
+            // FIX: Automatic Pencil Cleaning
+            if (mode === 'solve' && num !== 0) {
+                cleanPencilsAfterMove(idx, num);
+            }
         }
-    }
+    });
+
     updateUI();
     if (mode === 'solve') checkWin();
 }
@@ -523,17 +570,21 @@ function exitToCreate() {
 window.addEventListener('keydown', (e) => {
     if (paused || isWon) return;
     const key = e.key.toLowerCase();
+    
     if (['w','a','s','d'].includes(key) || key.includes('arrow')) {
         e.preventDefault();
-        if (selected === null) selected = 0;
-        else {
-            let r = Math.floor(selected / size), c = selected % size;
-            if ((key === 'w' || key === 'arrowup') && r > 0) r--;
-            if ((key === 's' || key === 'arrowdown') && r < size - 1) r++;
-            if ((key === 'a' || key === 'arrowleft') && c > 0) c--;
-            if ((key === 'd' || key === 'arrowright') && c < size - 1) c++;
-            selected = r * size + c;
-        }
+        
+        // Find the starting point based on the last selected cell
+        let current = selected.length > 0 ? selected[selected.length - 1] : 0;
+        let r = Math.floor(current / size), c = current % size;
+        
+        if ((key === 'w' || key === 'arrowup') && r > 0) r--;
+        if ((key === 's' || key === 'arrowdown') && r < size - 1) r++;
+        if ((key === 'a' || key === 'arrowleft') && c > 0) c--;
+        if ((key === 'd' || key === 'arrowright') && c < size - 1) c++;
+        
+        // Reset to a single selection upon keyboard movement
+        selected = [r * size + c];
         updateUI();
     }
     if (e.key >= '1' && e.key <= size.toString()) handleInput(parseInt(e.key));
