@@ -35,7 +35,7 @@ h1 { margin-bottom: 20px; font-size: 2.5rem; color: var(--text-main); display: f
 /* Sidebar Titles - Force to white in dark mode */
 body.dark-mode .tool-section h3, 
 body.dark-mode .side-panel h3 { 
-    color: ##f8fafc; 
+    color: #f8fafc; 
 }
 
 .main-card {
