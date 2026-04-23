@@ -264,6 +264,7 @@ function setAppMode(m) {
     document.getElementById('timer').style.display = (m === 'solve') ? 'block' : 'none';
     document.getElementById('pause-btn').style.display = (m === 'solve') ? 'block' : 'none';
     document.getElementById('clean-pencils-link').style.display = (m === 'solve') ? 'inline' : 'none';
+    document.getElementById('difficulty-badge').style.display = (m === 'solve') ? 'inline-block' : 'none';
     
     if (m === 'solve') {
         startTimer();
@@ -416,6 +417,18 @@ function checkWin() {
         document.getElementById('final-time').textContent = `Final Time: ${document.getElementById('timer').textContent}`;
         document.getElementById('win-overlay').style.display = 'flex';
     }
+}
+
+function generateWithDiff(s, d) {
+    size = s; 
+    bW = 3; 
+    bH = (s === 6) ? 2 : 3;
+    document.getElementById('size6').className = (s === 6) ? 'active' : '';
+    document.getElementById('size9').className = (s === 9) ? 'active' : '';
+    document.getElementById('diff').value = d;
+    
+    if (mode !== 'solve') setAppMode('solve');
+    generateNew();
 }
 
 function restartSameLevel() {
