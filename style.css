@@ -62,6 +62,7 @@ body.dark-mode .clear-color-btn { background: #334155; color: white; }
     color: var(--text-main); transition: background 0.1s;
 }
 
+/* Cell Number Colors for Normal & Dark Mode */
 .cell.given { color: #64748b; }
 .cell.user { color: var(--primary); font-style: italic; }
 .cell.error { color: var(--danger) !important; }
@@ -70,11 +71,12 @@ body.dark-mode .cell.given { color: #38bdf8; font-weight: 800; }
 body.dark-mode .cell.user { color: #f8fafc; }
 body.dark-mode .cell.error { color: #fb7185 !important; }
 
+/* Pencil Mark Colors for Normal & Dark Mode */
 .pencil-grid { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; height: 100%; position: absolute; pointer-events: none; }
 .pencil-num { font-size: 10px; color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: normal; }
 .pencil-num.error { color: var(--danger) !important; font-weight: bold; }
 body.dark-mode .pencil-num { color: #f8fafc; }
-body.dark-mode .pencil-num.error { color: #fb7185 !important; font-weight: bold; }
+body.dark-mode .pencil-num.error { color: ##fb923c !important; font-weight: bold; }
 
 .row { display: flex; gap: 12px; align-items: center; justify-content: center; width: 100%; }
 .toggle-group { display: flex; background: #f1f5f9; border-radius: 12px; padding: 5px; }
