@@ -145,9 +145,17 @@ function updateUI() {
 function renderGrid() {
     const container = document.getElementById('grid');
     container.innerHTML = '';
+// SMART FIX: Force the container to only be as wide as the cells
+    container.style.width = 'fit-content'; 
     container.style.gridTemplateColumns = `repeat(${size}, var(--cell-size))`;
+    
     const gridLine = darkMode ? "#ffffff" : "#1e293b";
-    document.getElementById('grid-wrapper').style.background = gridLine;
+    const wrapper = document.getElementById('grid-wrapper');
+    
+    wrapper.style.background = gridLine;
+    wrapper.style.width = 'fit-content'; // Prevents the 'white wings' on the sides
+    wrapper.style.margin = '0 auto';     // Centers it
+    
     container.style.background = gridLine;
 
     board.forEach((cell, i) => {
@@ -276,25 +284,43 @@ function setAppMode(m) {
     document.getElementById('clean-pencils-link').style.display = (m === 'solve') ? 'inline' : 'none';
     
     if (m === 'solve') {
-        startTimer();
+        resetTimer(); // Clear any old data
+        startTimer(); // Fresh start
     } else {
-        stopTimer();
+        resetTimer(); // Cleanly kill timer for Create mode
         initBoard();
     }
     updateUI();
 }
 
-// FIX: Timer "Cheating" Bug
-function startTimer() { 
-    // Ensure we don't start multiple intervals if Solve button is clicked repeatedly
-    if (timerInt) clearInterval(timerInt); 
+// Centralized Timer Management
+function resetTimer() {
+    if (timerInt) clearInterval(timerInt);
+    timerInt = null;
+    timerVal = 0;
+    document.getElementById('timer').textContent = "00:00";
+}
+
+function startTimer() {
+    // 1. Kill any existing interval to prevent "fighting" loops
+    if (timerInt) clearInterval(timerInt);
     
-    timerInt = setInterval(() => {
-        timerVal++;
-        const m = Math.floor(timerVal/60).toString().padStart(2, '0');
-        const s = (timerVal%60).toString().padStart(2, '0');
+    // 2. Immediate UI sync (don't wait 1s for the first tick)
+    const updateDisplay = () => {
+        const m = Math.floor(timerVal / 60).toString().padStart(2, '0');
+        const s = (timerVal % 60).toString().padStart(2, '0');
         document.getElementById('timer').textContent = `${m}:${s}`;
-    }, 1000); 
+    };
+    
+    updateDisplay();
+
+    // 3. Start the single source of truth interval
+    timerInt = setInterval(() => {
+        if (!paused && !isWon) { // Only increment if the game is active
+            timerVal++;
+            updateDisplay();
+        }
+    }, 1000);
 }
 
 // FIX: Unique Puzzle Indicator Logic
@@ -313,8 +339,6 @@ function countSolutions(boardArray, count = 0) {
     }
     return count;
 }
-
-function stopTimer() { clearInterval(timerInt); timerVal = 0; document.getElementById('timer').textContent = "00:00"; }
 
 function togglePause() { paused = !paused; document.getElementById('pause-overlay').style.display = paused ? 'flex' : 'none'; if (!paused) startTimer(); else clearInterval(timerInt); }
 
@@ -344,13 +368,16 @@ function validateStatus() {
 
 // FIX: Improved Generate Logic with Uniqueness Check
 function generateNew() {
+    resetTimer(); // STOP and RESET before doing heavy generation logic
     initBoard();
     let flat = Array(size * size).fill(0);
     
     currentDifficulty = document.getElementById('diff').value;
     document.getElementById('difficulty-badge').textContent = currentDifficulty;
     document.getElementById('difficulty-badge').style.display = 'inline-block';
-    
+    if (mode === 'solve') {
+        startTimer(); // Only restart once the board is ready
+        
     // 1. Fill a complete valid board
     const fill = (idx) => {
         if (idx === size * size) return true;
@@ -422,9 +449,11 @@ function hasConflictGen(arr, idx, val) {
 
 function checkWin() {
     if (board.every(c => c.val !== 0) && !board.some((_, i) => hasConflict(board, i, board[i].val))) {
-        isWon = true; clearInterval(timerInt);
+        isWon = true; 
+        if (timerInt) clearInterval(timerInt); // Cleanly stop the loop on win
         document.getElementById('final-time').textContent = `Final Time: ${document.getElementById('timer').textContent}`;
         document.getElementById('win-overlay').style.display = 'flex';
+        fireConfetti(); // Ensure the animation starts
     }
 }
 
