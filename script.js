@@ -340,7 +340,7 @@ function generateNew() {
     
     currentDifficulty = document.getElementById('diff').value;
     document.getElementById('difficulty-badge').textContent = currentDifficulty;
-    document.getElementById('difficulty-badge').style.display = (mode === 'solve') ? 'inline-block' : 'none';
+    document.getElementById('difficulty-badge').style.display = 'inline-block';
     
     // 1. Fill a complete valid board
     const fill = (idx) => {
