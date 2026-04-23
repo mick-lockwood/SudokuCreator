@@ -212,7 +212,7 @@ body.dark-mode .win-grid-label {
 #return-win-btn {
     width: 100%;
     background: var(--dark); /* Matches the footer bar seen in your screenshot */
-    color: var(--text-main);
+    color: #f8fafc;
     padding: 15px 0;
     font-weight: 800;
     cursor: pointer;
