@@ -143,6 +143,20 @@ body.dark-mode #difficulty-badge {
     color: #ffffff;      /* White text in dark mode */
 }
 
+/* Pause Button Styling */
+#pause-btn { background: #64748b; color: white; 
+}
+
+body.dark-mode #pause-btn { background: #334155; 
+}
+
+/* Clear Input Button Styling */
+.util-link { color: #64748b; text-decoration: none; font-weight: 600; 
+}
+
+body.dark-mode .util-link { color: #cbd5e1; 
+}
+
 /* Ghosting effect for disabled buttons */
 .n-btn:disabled { 
     opacity: 0.2; 
