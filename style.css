@@ -133,7 +133,7 @@ body.dark-mode .toggle-group {
     border-radius: 8px; 
     cursor: pointer; 
     font-weight: 600; 
-    background: transparent; 
+    background: #f1f5f9; 
     color: #94a3b8; 
     transition: all 0.2s;
 }
