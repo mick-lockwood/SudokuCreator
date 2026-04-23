@@ -174,6 +174,10 @@ function renderGrid() {
         const div = document.createElement('div');
         div.className = 'cell'; 
         div.id = `cell-${i}`;
+
+        // SET THE BASE INTERNAL LINE (Thin)
+        // Using a solid color for precision, or rgba for a subtler look
+        div.style.border = `1px solid ${gridLine}`;
         
         const r = Math.floor(i / size), c = i % size;
         
