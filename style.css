@@ -87,4 +87,31 @@ body.dark-mode .n-btn { border-color: #334155; }
 .n-btn.pencil-active { background: var(--pencil-active) !important; color: #000000 !important; border-color: #d4ac0d; }
 
 .overlay { position: absolute; inset: 0; background: var(--card-bg); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; border-radius: 8px; }
-#confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
+
+/* Ghosting effect for disabled buttons */
+.n-btn:disabled { 
+    opacity: 0.2; 
+    cursor: not-allowed; 
+    filter: grayscale(1); 
+}
+
+/* Confetti positioning */
+#confetti { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    pointer-events: none; 
+    z-index: 999; 
+}
+
+/* Return button styling */
+#return-win-btn {
+    margin-top: 15px; 
+    color: var(--primary); 
+    font-weight: 800; 
+    cursor: pointer; 
+    text-decoration: underline;
+    text-align: center;
+}
