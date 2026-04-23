@@ -63,11 +63,15 @@
                     <button class="btn btn-primary" style="margin-top:15px;" onclick="togglePause()">Resume</button>
                 </div>
                 <div id="win-overlay" class="overlay">
-                    <h2 style="color: var(--success); font-size: 34px;">SOLVED!</h2>
-                    <p id="final-time" style="font-weight: 800; margin: 10px 0;"></p>
-                    <button class="btn btn-primary" onclick="restartSameLevel()">Play Again</button>
-                    <button class="btn" style="margin-top: 10px; background: #64748b; color: white;" onclick="exitToCreate()">Back to Create</button>
+                    <h2 style="color: var(--success); font-size: 34px; margin-bottom: 5px;">SOLVED!</h2>
+                    <p id="final-time" style="margin-bottom: 10px; font-weight: 800; font-size: 18px;"></p>
+                    <div style="display: flex; flex-direction: column; gap: 8px; width: 90%;">
+                        <button class="btn btn-primary" style="background: var(--success);" onclick="restartSameLevel()">Play Again (Same Board)</button>
+                        <button class="btn btn-secondary" onclick="hideWinOverlay()">View My Solve</button>
+                        <button class="btn btn-secondary" style="background: var(--dark);" onclick="exitToCreate()">Back to Create Mode</button>
+                    </div>
                 </div>
+                <div id="return-win-btn" onclick="showWinOverlay()" style="display:none;">Show Result Options</div>
             </div>
 
             <div class="numpad" id="numpad" style="margin-top: 30px; width: 100%;"></div>
