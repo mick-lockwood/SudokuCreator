@@ -157,6 +157,7 @@ function renderGrid() {
     const container = document.getElementById('grid');
     container.innerHTML = '';
 // SMART FIX: Force the container to only be as wide as the cells
+    container.style.display = 'grid';
     container.style.width = 'fit-content'; 
     container.style.gridTemplateColumns = `repeat(${size}, var(--cell-size))`;
     
